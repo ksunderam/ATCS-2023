@@ -1,7 +1,7 @@
 import pygame
 from fsm import FSM
 
-class MazeBot(pygame.sprite.Sprite):
+class Person(pygame.sprite.Sprite):
     SOUTH, EAST, NORTH, WEST, BSOUTH, BEAST, BNORTH, BWEST, GAMEOVER = 0, 1, 2, 3, 4, 5, 6, 7, 8
 
     def __init__(self, game, x=50, y=50):
@@ -10,7 +10,7 @@ class MazeBot(pygame.sprite.Sprite):
         self.game = game
 
         # Load initial image
-        self.image = pygame.image.load("assets/images/bot.png")
+        self.image = pygame.image.load("/Users/kayansunderam/Documents/ATCS/ATCS-2023/TheBlindMaze/images/bot.png")
         self.rect = self.image.get_rect()
 
         # Set rectangle

@@ -17,9 +17,9 @@
 import pygame
 import sys
 from block import Block
-# from person import Person
+from person import Person
 
-class MangoGame:
+class TheBlindMaze:
     # Constants
     START_X, START_Y = 24, 24
     SPACING = 50
@@ -45,15 +45,17 @@ class MangoGame:
         # Load the game level and available paths
         self.load_level(1)
 
-        self.HEIGHT = len(self.txt_grid) * self.SPACING
-        self.WIDTH = len(self.txt_grid[0]) * self.SPACING
+        # self.HEIGHT = len(self.txt_grid) * self.SPACING
+        # self.WIDTH = len(self.txt_grid[0]) * self.SPACING
 
         # Create the game window
-        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
-        pygame.display.set_caption("Mango FSM")
+        self.screen = pygame.display.set_mode((500, 500))
+        pygame.display.set_caption("The Blind Maze")
 
     def load_level(self, maze_number=1):
-        filepath = "maze1.txt" 
+        filepath = "maze1.txt"
+        print("hello")
+        print(filepath)
         row = 0
         with open(filepath, "r") as file:
             line = file.readline().strip()
@@ -72,7 +74,7 @@ class MangoGame:
                     elif line[col] == 'B':
                         self.blocks.add(Block(pos_x, pos_y, Block.BOOSTER))
                     elif line[col] == 'M':
-                        self.mango = MazeBot(self, pos_x, pos_y)
+                        self.mango = Person(self, pos_x, pos_y)
 
                 self.txt_grid.append(txt_row)
                 line = file.readline()
@@ -84,6 +86,16 @@ class MangoGame:
 
         # Draw the initial screen
         self.screen.fill(self.BACKGROUND_COLOR)
+
+        # Initializing surface for black cover
+        surface = pygame.display.set_mode((400,300))
+
+        # Initializing Color
+        color = (0,0,0)
+
+        # Drawing Rectangle
+        pygame.draw.rect(surface, color, pygame.Rect(30, 30, 500, 500),  2)
+
         self.blocks.draw(300)
         self.mango.draw(300)
         
@@ -112,5 +124,5 @@ class MangoGame:
         sys.exit()
 
 if __name__ == "__main__":
-    pm = MangoGame()
+    pm = TheBlindMaze()
     pm.run()
