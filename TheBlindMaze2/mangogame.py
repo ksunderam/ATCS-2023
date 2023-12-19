@@ -1,25 +1,9 @@
-# import pygame
-# import sys
-# from block import Block
-
-# class MangoGame:
-#     # Constants
-#     START_X, START_Y = 24, 24
-#     SPACING = 50
-#     BACKGROUND_COLOR = (0, 0, 0)
-
-#     def __init__(self):
-#         pygame.init()
-#         self.screen = pygame.display.set_mode((300, 300))
-#         pygame.display.set_caption("The Blind Maze")
-
-
 import pygame
 import sys
 from block import Block
-from person import Person
+from mazebot import MazeBot
 
-class TheBlindMaze:
+class MangoGame:
     # Constants
     START_X, START_Y = 24, 24
     SPACING = 50
@@ -27,6 +11,10 @@ class TheBlindMaze:
 
     def __init__(self):
         self.DEBUG = True
+
+        # To map--if on light switch coordinates than open light
+        self.r = []
+        self.c = []
 
         # Initialize Pygame
         pygame.init()
@@ -43,23 +31,17 @@ class TheBlindMaze:
         self.mango = None
 
         # Load the game level and available paths
-        self.load_level(1)
+        self.load_level(2)
 
         self.HEIGHT = len(self.txt_grid) * self.SPACING
         self.WIDTH = len(self.txt_grid[0]) * self.SPACING
-        # self.HEIGHT = 500
-        # self.WIDTH = 500
-
 
         # Create the game window
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
-        pygame.display.set_caption("TheBlindMaze")
+        pygame.display.set_caption("Mango FSM")
 
     def load_level(self, maze_number=1):
-        # filepath = "/Users/kayansunderam/Documents/ATCS/ATCS-2023/TheBlindMaze/maze1.txt"
-        filepath = "/Users/kayansunderam/Documents/ATCS/ATCS-2023/TheBlindMaze/mazes/maze" + str(maze_number) + ".txt"
-        # print("hello")
-        # print(filepath)
+        filepath = "assets/mazes/maze" + str(maze_number) + ".txt"
         row = 0
         with open(filepath, "r") as file:
             line = file.readline().strip()
@@ -74,11 +56,15 @@ class TheBlindMaze:
                     elif line[col] == 'X':
                         self.blocks.add(Block(pos_x, pos_y, Block.BRICK))
                     elif line[col] == '$':
-                        self.blocks.add(Block(pos_x, pos_y, Block.LIGHTSWITCH))
+                        self.blocks.add(Block(pos_x, pos_y, Block.MONEY))
                     elif line[col] == 'B':
                         self.blocks.add(Block(pos_x, pos_y, Block.BOOSTER))
                     elif line[col] == 'M':
-                        self.mango = Person(self, pos_x, pos_y)
+                        self.mango = MazeBot(self, pos_x, pos_y)
+                    elif line[col] == 'L':
+                        self.blocks.add(Block(pos_x, pos_y, Block.LIGHTSWITCH))
+                        self.r.append(row)
+                        self.c.append(col)
 
                 self.txt_grid.append(txt_row)
                 line = file.readline()
@@ -90,45 +76,46 @@ class TheBlindMaze:
 
         # Draw the initial screen
         self.screen.fill(self.BACKGROUND_COLOR)
-
-        # Initializing surface for black cover
-        # surface = pygame.display.set_mode((400,300))
-
-        # # Initializing Color
-        # color = (0,0,0)
-
-        # # Drawing Rectangle
-        # pygame.draw.rect(surface, color, pygame.Rect(30, 30, 500, 500),  2)
-
         self.blocks.draw(self.screen)
         self.mango.draw(self.screen)
-        
+
         while running:
+            # Set fps to 120
+            self.dt += self.clock.tick(120)
 
             # Handle closing the window
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                
-            self.dt = self.clock.tick(10)  # Update the clock tick
             
             # Only update every 120 fps
-            if self.dt > 10:
+            if self.dt > 120:
                 self.dt = 0
                 self.mango.update()
 
                 # Draw to the screen
                 self.screen.fill(self.BACKGROUND_COLOR)
                 self.blocks.draw(self.screen)
-                self.mango.draw(self.screen)
+                # self.mango.draw(self.screen)
 
-            # Update the display
+            # Update the display, also darken it to make the maze "blind"
             pygame.display.flip()
+            self.screen.fill(self.BACKGROUND_COLOR)
+            for i in range(len(self.r)):
+                if self.mango.get_grid_x == self.c[i] and self.mango.get_grid_y == self.r[i]:
+            # (pos_x - self.START_X)/self.SPACING = col)
+                    self.screen.fill(self.BACKGROUND_COLOR)
+                    self.blocks.draw(self.screen)
+            
+            self.mango.draw(self.screen)
+            pygame.display.flip()
+
+            # if self.mango.fsm
 
         # Quit Pygame
         pygame.quit()
         sys.exit()
 
 if __name__ == "__main__":
-    pm = TheBlindMaze()
+    pm = MangoGame()
     pm.run()

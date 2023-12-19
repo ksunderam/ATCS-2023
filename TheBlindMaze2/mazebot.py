@@ -1,8 +1,9 @@
 from pygame.locals import *
 import pygame
+import sys
 from fsm import FSM
 
-class Person(pygame.sprite.Sprite):
+class MazeBot(pygame.sprite.Sprite):
     SOUTH, EAST, NORTH, WEST, BSOUTH, BEAST, BNORTH, BWEST, GAMEOVER = 0, 1, 2, 3, 4, 5, 6, 7, 8
 
     def __init__(self, game, x=50, y=50):
@@ -11,7 +12,7 @@ class Person(pygame.sprite.Sprite):
         self.game = game
 
         # Load initial image
-        self.image = pygame.image.load("/Users/kayansunderam/Documents/ATCS/ATCS-2023/TheBlindMaze/images/bot.png")
+        self.image = pygame.image.load("assets/images/bot.png")
         self.rect = self.image.get_rect()
 
         # Set rectangle
@@ -35,20 +36,7 @@ class Person(pygame.sprite.Sprite):
         moves = [self.move_south, self.move_east, self.move_north, self.move_west]
         # states = ["SOUTH", "EAST", "NORTH", "WEST", "BSOUTH", "BEAST", "BNORTH", "BWEST"]
         # this is just to visualize for input states: 0, 1, 2... 7
-
-
-        # # if arrow down:
-        #     self.fsm.add_transition(" ", 0, self.move_south, 0)
-        # # if arrow right:
-        #     self.fsm.add_transition(" ", 1, self.move_east, 1)
-        # # if arrow up:
-        #     self.fsm.add_transition(" ", 2, self.move_north, 2)
-        # # if arrow left:
-        #     self.fsm.add_transition(" ", 3, self.move_w, 3)
-
-
         for i in range(4):
-
             self.fsm.add_transition(" ", i, moves[i], i)
             self.fsm.add_transition(" ", i+4, moves[i], i+4)
 
@@ -150,9 +138,12 @@ class Person(pygame.sprite.Sprite):
         # if state == 8:
         #     return self.maze[grid_y][grid_x]
 
-
+        # Attempted user inputs function, to check what the user is pressing to correspond to that motion on the screen
         while True:
             for evenement in pygame.event.get():
+                if evenement.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
 
             #South
                 if evenement.type == KEYDOWN and evenement.key == K_DOWN:
@@ -169,12 +160,16 @@ class Person(pygame.sprite.Sprite):
                 #West
                 if evenement.type == KEYDOWN and evenement.key == K_LEFT:
                     return self.maze[grid_y][grid_x-1]
-                
-                if state == 8:
-                    return self.maze[grid_y][grid_x]
-        
-
-       
+            
+    
+    # Getters for where the bot is on the maze
+    def get_grid_x(self):
+        grid_x = self.rect.centerx // self.game.SPACING
+        return grid_x
+    
+    def get_grid_y(self):
+        grid_y = self.rect.centerx // self.game.SPACING
+        return grid_y
     
     def update(self):
         # TODO: Use the finite state machine to process input
